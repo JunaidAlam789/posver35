@@ -1,6 +1,6 @@
 # POS (Point of Sale) System
 
-A modern Point of Sale system built with Next.js 14, Prisma, SQLite, and shadcn/ui.
+A modern Point of Sale system built with Next.js 14, Prisma, PostgreSql, and shadcn/ui.
 
 ## Features
 
@@ -16,6 +16,7 @@ A modern Point of Sale system built with Next.js 14, Prisma, SQLite, and shadcn/
 
 - [Next.js 14](https://nextjs.org/) - React framework
 - [Prisma](https://www.prisma.io/) - Database ORM
+- [Postgresql] (https://www.postgresql.org/) Database
 - [SQLite](https://www.sqlite.org/) - Database
 - [shadcn/ui](https://ui.shadcn.com/) - UI components
 - [Tailwind CSS](https://tailwindcss.com/) - CSS framework
@@ -38,7 +39,7 @@ https://www.prisma.io/orm
 
 pnpm install prisma --save-dev
 
-pnpm prisma init --datasource-provider sqlite
+pnpm prisma init
 
 pnpm i @prisma/client
 
@@ -50,4 +51,6 @@ pnpm prisma db generate
 pnpm prisma studio
 
 https://www.prisma.io/docs/orm/more/help-and-troubleshooting/nextjs-help
-
+for deployment on vercel
+"scripts": {
+    "postinstall": "prisma generate",
