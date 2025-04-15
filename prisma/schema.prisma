@@ -25,12 +25,12 @@ model Product {
   name        String
   description String
   price       Float
-  image       String?
   sku         String      @unique
   categoryId  String
   stock       Int
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  image       String?
   orderItems  OrderItem[]
   category    Category    @relation(fields: [categoryId], references: [id])
 
