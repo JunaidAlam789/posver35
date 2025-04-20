@@ -54,3 +54,6 @@ https://www.prisma.io/docs/orm/more/help-and-troubleshooting/nextjs-help
 for deployment on vercel
 "scripts": {
     "postinstall": "prisma generate",
+
+
+pnpm prisma generate
