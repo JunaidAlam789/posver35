@@ -45,6 +45,12 @@ const routes = [
     color: "text-emerald-500",
   },
   {
+    label: "Upload Image",
+    icon: CreditCard,
+    href: "/products/upload",
+    color: "text-green-500",
+  },
+  {
     label: "Settings",
     icon: Settings,
     href: "/settings",
