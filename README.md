@@ -56,4 +56,6 @@ for deployment on vercel
     "postinstall": "prisma generate",
 
 
+
+pnpm prisma db pull
 pnpm prisma generate
