@@ -1,6 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import type React from "react"
+
+import { useState, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -11,10 +13,12 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2 } from "lucide-react"
+import { Loader2, Upload, X, ImageIcon } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
 import { createProduct, updateProduct } from "@/lib/data/actions"
+import { uploadProductImage } from "@/lib/blob"
 import type { Product, Category } from "@/lib/data/schema"
+import Image from "next/image"
 
 const productFormSchema = z.object({
   name: z.string().min(2, { message: "Product name must be at least 2 characters." }),
@@ -35,6 +39,9 @@ interface ProductFormProps {
 
 export function ProductForm({ product, categories }: ProductFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+  const [previewImage, setPreviewImage] = useState<string | null>(product?.image || null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const { toast } = useToast()
   const isEditing = !!product
@@ -103,6 +110,57 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploading(true)
+
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const result = await uploadProductImage(formData)
+
+      if (result.error) {
+        toast({
+          title: "Upload failed",
+          description: result.error,
+          variant: "destructive",
+        })
+        return
+      }
+
+      if (result.url) {
+        // Set the image URL in the form
+        form.setValue("image", result.url)
+        setPreviewImage(result.url)
+        toast({
+          title: "Image uploaded",
+          description: "Product image has been uploaded successfully.",
+        })
+      }
+    } catch (error) {
+      console.error("Error uploading image:", error)
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload image. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsUploading(false)
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
+    }
+  }
+
+  const handleRemoveImage = () => {
+    form.setValue("image", "")
+    setPreviewImage(null)
   }
 
   return (
@@ -220,12 +278,72 @@ export function ProductForm({ product, categories }: ProductFormProps) {
               name="image"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Image URL</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter image URL" {...field} value={field.value || ""} />
-                  </FormControl>
-                  <FormDescription>URL to the product image (optional)</FormDescription>
-                  <FormMessage />
+                  <FormLabel>Product Image</FormLabel>
+                  <div className="space-y-4">
+                    {/* Hidden file input */}
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      className="hidden"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      onChange={handleImageUpload}
+                    />
+
+                    {/* Image preview */}
+                    {previewImage ? (
+                      <div className="relative w-full max-w-[300px] aspect-square rounded-md overflow-hidden border">
+                        <Image
+                          src={previewImage || "/placeholder.svg"}
+                          alt="Product preview"
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 300px"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2 h-8 w-8 rounded-full"
+                          onClick={handleRemoveImage}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center w-full max-w-[300px] aspect-square rounded-md border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
+                        <div className="flex flex-col items-center justify-center p-6 text-center">
+                          <ImageIcon className="h-10 w-10 text-gray-400 mb-2" />
+                          <p className="text-sm text-gray-500 dark:text-gray-400">No image uploaded</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Upload button */}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                      className="mt-2"
+                    >
+                      {isUploading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Uploading...
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="mr-2 h-4 w-4" />
+                          {previewImage ? "Change Image" : "Upload Image"}
+                        </>
+                      )}
+                    </Button>
+
+                    {/* Hidden input for the form */}
+                    <input type="hidden" {...field} />
+                    <FormDescription>Upload a product image (JPEG, PNG, WebP, or GIF, max 5MB)</FormDescription>
+                    <FormMessage />
+                  </div>
                 </FormItem>
               )}
             />
@@ -252,4 +370,3 @@ export function ProductForm({ product, categories }: ProductFormProps) {
     </Form>
   )
 }
-

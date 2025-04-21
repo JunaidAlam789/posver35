@@ -78,4 +78,3 @@ export function DeleteProductDialog({ productId, productName, isOpen, onClose }:
     </Dialog>
   )
 }
-
