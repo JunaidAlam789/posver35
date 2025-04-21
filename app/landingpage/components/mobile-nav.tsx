@@ -56,6 +56,13 @@ export function MobileNav() {
           >
             Testimonials
           </Link>
+          <Link
+            href="/dashboard"
+            className="text-lg font-medium hover:underline underline-offset-4"
+            onClick={() => setOpen(false)}
+          >
+            Dashboard
+          </Link>
         </nav>
         <div className="mt-auto border-t pt-4 flex flex-col gap-2">
           <Button asChild variant="outline" className="w-full">
