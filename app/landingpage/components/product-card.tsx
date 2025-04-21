@@ -13,19 +13,15 @@ import { Badge } from "@/components/ui/badge"
 
 interface ProductCardProps {
   product: Product
-  mainImage?: { url: string; alt?: string } | null
 }
 
-export function ProductCard({ product, mainImage }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart()
   const [isHovered, setIsHovered] = useState(false)
-  const [imageError, setImageError] = useState(false)
 
   const handleAddToCart = () => {
     addItem(product, 1)
   }
-
-  const imageSrc = imageError || !mainImage?.url ? "/placeholder.svg?height=300&width=300" : mainImage.url
 
   return (
     <Card className="overflow-hidden transition-all duration-200 hover:shadow-md">
@@ -35,13 +31,12 @@ export function ProductCard({ product, mainImage }: ProductCardProps) {
         onMouseLeave={() => setIsHovered(false)}
       >
         <Image
-          src={imageSrc || "/placeholder.svg"}
-          alt={mainImage?.alt || product.name}
+          src={product.image || "/placeholder.svg?height=300&width=300"}
+          alt={product.name}
           fill
           className="object-cover transition-transform duration-300 ease-in-out"
           style={{ transform: isHovered ? "scale(1.05)" : "scale(1)" }}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          onError={() => setImageError(true)}
         />
         {product.stock <= 10 && (
           <Badge variant="destructive" className="absolute top-2 right-2">
@@ -75,3 +70,4 @@ export function ProductCard({ product, mainImage }: ProductCardProps) {
     </Card>
   )
 }
+

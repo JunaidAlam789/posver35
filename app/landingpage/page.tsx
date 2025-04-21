@@ -1,216 +1,418 @@
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { ShoppingBag, ArrowRight, Truck, Shield, Clock, ChevronRight } from "lucide-react"
+import Image from "next/image"
 import { getProducts, getCategories } from "@/lib/data/actions"
-//import { getMainProductImage } from "@/lib/image-service"
 import { ProductCard } from "./components/product-card"
 import { CategoryCard } from "./components/category-card"
 import { TestimonialCard } from "./components/testimonial-card"
 import { NewsletterForm } from "./components/newsletter-form"
-import { Button } from "@/components/ui/button"
-import { ArrowRight, ShoppingBag, Truck, CreditCard, LifeBuoy } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+import { MobileNav } from "./components/mobile-nav"
 
 export default async function LandingPage() {
+  // Get featured products and categories
   const products = await getProducts()
   const categories = await getCategories()
 
   // Get featured products (first 4)
   const featuredProducts = products.slice(0, 4)
 
-  // Get main images for featured products
-  const featuredProductsWithImages = await Promise.all(
-    featuredProducts.map(async (product) => {
-      //const { image } = await getMainProductImage(product.id)
-      const image = product.image
-      return {
-        product,
-        mainImage: image,
-      }
-    }),
-  )
-
-  // Get featured categories (first 3)
-  const featuredCategories = categories.slice(0, 3)
-
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero Section */}
-      <section className="relative py-20 md:py-32 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <Image src="/hero-image.jpg" alt="Hero background" fill className="object-cover brightness-50" priority />
-        </div>
-        <div className="container relative z-10 mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">Modern Solutions for Your Business</h1>
-          <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-            Streamline your operations with our powerful point of sale system designed for businesses of all sizes.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild size="lg" className="text-lg">
-              <Link href="/products-catalog">
-                Shop Now <ShoppingBag className="ml-2 h-5 w-5" />
-              </Link>
+      {/* Navigation */}
+      <header className="border-b">
+        <div className="container flex h-16 items-center justify-between px-4 md:px-6">
+          <Link href="/" className="flex items-center gap-2">
+            <ShoppingBag className="h-6 w-6" />
+            <span className="text-xl font-bold">ShopEase</span>
+          </Link>
+          <nav className="hidden md:flex gap-6">
+            <Link href="#products" className="text-sm font-medium hover:underline underline-offset-4">
+              Products
+            </Link>
+            <Link href="#categories" className="text-sm font-medium hover:underline underline-offset-4">
+              Categories
+            </Link>
+            <Link href="#about" className="text-sm font-medium hover:underline underline-offset-4">
+              About
+            </Link>
+            <Link href="#testimonials" className="text-sm font-medium hover:underline underline-offset-4">
+              Testimonials
+            </Link>
+            <Link href="/dashboard" className="text-sm font-medium hover:underline underline-offset-4">
+              Dashboard
+            </Link>
+          </nav>
+          <div className="flex items-center gap-4">
+            <Button asChild variant="outline" size="sm" className="hidden md:flex">
+              <Link href="/auth/login">Sign In</Link>
             </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="text-lg bg-white/10 text-white border-white/20 hover:bg-white/20"
-            >
-              <Link href="/dashboard">Dashboard Access</Link>
+            <Button asChild size="sm" className="hidden md:flex">
+              <Link href="/dashboard">Shop Now</Link>
             </Button>
+            <MobileNav />
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* Value Proposition */}
-      <section className="py-16 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="flex items-start space-x-4">
-              <div className="bg-primary/10 p-3 rounded-lg">
-                <ShoppingBag className="h-6 w-6 text-primary" />
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+                    Discover Amazing Products for Your Lifestyle
+                  </h1>
+                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
+                    Shop the latest trends and essentials with our curated collection. Quality products, fast delivery,
+                    and exceptional service.
+                  </p>
+                </div>
+                <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                  <Button asChild size="lg" className="px-8">
+                    <Link href="/dashboard">
+                      Shop Now <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button asChild variant="outline" size="lg">
+                    <Link href="#categories">Explore Categories</Link>
+                  </Button>
+                </div>
               </div>
-              <div>
-                <h3 className="font-medium text-lg mb-2">Easy Shopping</h3>
-                <p className="text-muted-foreground">Browse and purchase products with a seamless experience.</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-4">
-              <div className="bg-primary/10 p-3 rounded-lg">
-                <Truck className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-medium text-lg mb-2">Fast Delivery</h3>
-                <p className="text-muted-foreground">Get your products delivered quickly and efficiently.</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-4">
-              <div className="bg-primary/10 p-3 rounded-lg">
-                <CreditCard className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-medium text-lg mb-2">Secure Payments</h3>
-                <p className="text-muted-foreground">Your transactions are protected with advanced security.</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-4">
-              <div className="bg-primary/10 p-3 rounded-lg">
-                <LifeBuoy className="h-6 w-6 text-primary" />
-              </div>
-              <div>
-                <h3 className="font-medium text-lg mb-2">24/7 Support</h3>
-                <p className="text-muted-foreground">Our team is always available to help with any issues.</p>
+              <div className="flex justify-center">
+                <div className="relative w-full max-w-[500px] aspect-square overflow-hidden rounded-xl">
+                  <Image
+                    src="/hero-image.jpg"
+                    alt="Hero Image"
+                    fill
+                    className="object-cover"
+                    priority
+                    sizes="(max-width: 768px) 100vw, 500px"
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Featured Products */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">Featured Products</h2>
-            <Button asChild variant="ghost">
-              <Link href="/products-catalog">
-                View All <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredProductsWithImages.map(({ product, mainImage }) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="py-16 bg-muted">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Shop by Category</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredCategories.map((category) => (
-              <CategoryCard key={category.id} category={category} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* About Section */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="relative aspect-video rounded-lg overflow-hidden">
-              <Image
-                src="/about-image.jpg"
-                alt="About our company"
-                fill
-                className="object-cover"
-                sizes="(max-width: 1024px) 100vw, 50vw"
-              />
+        {/* Features Section */}
+        <section className="w-full py-12 md:py-16 lg:py-20">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="flex flex-col items-center text-center space-y-2 p-4 rounded-lg border bg-card">
+                <Truck className="h-10 w-10 text-primary" />
+                <h3 className="text-xl font-medium">Free Shipping</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">On orders over $50</p>
+              </div>
+              <div className="flex flex-col items-center text-center space-y-2 p-4 rounded-lg border bg-card">
+                <Shield className="h-10 w-10 text-primary" />
+                <h3 className="text-xl font-medium">Secure Payment</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">100% secure transactions</p>
+              </div>
+              <div className="flex flex-col items-center text-center space-y-2 p-4 rounded-lg border bg-card">
+                <Clock className="h-10 w-10 text-primary" />
+                <h3 className="text-xl font-medium">24/7 Support</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Always here to help you</p>
+              </div>
+              <div className="flex flex-col items-center text-center space-y-2 p-4 rounded-lg border bg-card">
+                <ShoppingBag className="h-10 w-10 text-primary" />
+                <h3 className="text-xl font-medium">Easy Returns</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">30-day return policy</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-3xl font-bold mb-6">About Our Company</h2>
-              <p className="text-muted-foreground mb-6">
-                We are dedicated to providing the best point of sale solutions for businesses of all sizes. Our system
-                is designed to streamline your operations, improve customer experience, and boost your bottom line.
-              </p>
-              <p className="text-muted-foreground mb-6">
-                With years of experience in the industry, we understand the challenges businesses face and have
-                developed a solution that addresses these pain points effectively.
-              </p>
-              <Button asChild>
-                <Link href="/dashboard">
-                  Learn More <ArrowRight className="ml-2 h-4 w-4" />
+          </div>
+        </section>
+
+        {/* Featured Products Section */}
+        <section id="products" className="w-full py-12 md:py-16 lg:py-20 bg-gray-50 dark:bg-gray-900">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Featured Products</h2>
+                <p className="max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Discover our most popular items loved by customers
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+              {featuredProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+            <div className="flex justify-center mt-10">
+              <Button asChild variant="outline" size="lg">
+                <Link href="/products-catalog">
+                  View All Products <ChevronRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Testimonials */}
-      <section className="py-16 bg-muted">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">What Our Customers Say</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <TestimonialCard
-              name="Sarah Johnson"
-              role="Retail Store Owner"
-              image="/testimonials/person1.jpg"
-              content="This POS system has transformed how we operate. The inventory management is seamless, and the reporting features give me insights I never had before."
-              rating={5}
-            />
-            <TestimonialCard
-              name="Michael Chen"
-              role="Restaurant Manager"
-              image="/testimonials/person2.jpg"
-              content="The speed and reliability of this system have significantly improved our customer service. Our staff picked it up quickly, and we've seen a boost in sales."
-              rating={4}
-            />
-            <TestimonialCard
-              name="Emily Rodriguez"
-              role="Boutique Owner"
-              image="/testimonials/person3.jpg"
-              content="The customer support is outstanding. Whenever we've had questions, the team has been responsive and helpful. I highly recommend this POS solution."
-              rating={5}
-            />
+        {/* Categories Section */}
+        <section id="categories" className="w-full py-12 md:py-16 lg:py-20">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Shop by Category</h2>
+                <p className="max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Browse our wide selection of categories to find exactly what you need
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+              {categories.map((category) => (
+                <CategoryCard key={category.id} category={category} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* About Section */}
+        <section
+          id="about"
+          className="w-full py-12 md:py-16 lg:py-20 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800"
+        >
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
+              <div className="flex justify-center">
+                <div className="relative w-full max-w-[500px] aspect-square overflow-hidden rounded-xl">
+                  <Image
+                    src="/about-image.jpg"
+                    alt="About Us"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 500px"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Our Story</h2>
+                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
+                    Founded in 2023, ShopEase started with a simple mission: to make shopping easier and more enjoyable
+                    for everyone. We carefully select each product in our inventory to ensure quality and value.
+                  </p>
+                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
+                    Our team is dedicated to providing exceptional customer service and a seamless shopping experience.
+                    We believe in building lasting relationships with our customers and communities.
+                  </p>
+                </div>
+                <Button asChild variant="outline" className="w-fit">
+                  <Link href="/about">Learn More About Us</Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials Section */}
+        <section id="testimonials" className="w-full py-12 md:py-16 lg:py-20">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">What Our Customers Say</h2>
+                <p className="max-w-[700px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+                  Don't just take our word for it - hear from our satisfied customers
+                </p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              <TestimonialCard
+                name="Sarah Johnson"
+                role="Regular Customer"
+                content="I've been shopping here for months and I'm always impressed by the quality and service. Fast shipping and great products!"
+                rating={5}
+                image="/testimonials/person1.jpg"
+              />
+              <TestimonialCard
+                name="Michael Chen"
+                role="New Customer"
+                content="My first order exceeded all expectations. The website was easy to navigate and my items arrived earlier than expected."
+                rating={5}
+                image="/testimonials/person2.jpg"
+              />
+              <TestimonialCard
+                name="Emily Rodriguez"
+                role="Loyal Customer"
+                content="The customer service is outstanding. When I had an issue with my order, they resolved it immediately. Highly recommend!"
+                rating={4}
+                image="/testimonials/person3.jpg"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Newsletter Section */}
+        <section className="w-full py-12 md:py-16 lg:py-20 bg-primary text-primary-foreground">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Stay Updated</h2>
+                <p className="max-w-[600px] md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Subscribe to our newsletter for the latest products, promotions, and exclusive offers
+                </p>
+              </div>
+              <div className="w-full max-w-md">
+                <NewsletterForm />
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="w-full py-6 md:py-12 border-t">
+        <div className="container px-4 md:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div className="space-y-4">
+              <Link href="/" className="flex items-center gap-2">
+                <ShoppingBag className="h-6 w-6" />
+                <span className="text-xl font-bold">ShopEase</span>
+              </Link>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Your one-stop shop for quality products at affordable prices.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Shop</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/dashboard" className="text-sm hover:underline">
+                    All Products
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#categories" className="text-sm hover:underline">
+                    Categories
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:underline">
+                    New Arrivals
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:underline">
+                    Sale
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Company</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="#about" className="text-sm hover:underline">
+                    About Us
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:underline">
+                    Contact
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:underline">
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:underline">
+                    Blog
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Help</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="#" className="text-sm hover:underline">
+                    Shipping & Returns
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:underline">
+                    FAQ
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:underline">
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:underline">
+                    Terms of Service
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-center mt-8 pt-8 border-t">
+            <p className="text-sm text-gray-500 dark:text-gray-400">© 2024 ShopEase. All rights reserved.</p>
+            <div className="flex items-center gap-4 mt-4 md:mt-0">
+              <Link href="#" className="text-gray-500 hover:text-primary">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-5 w-5"
+                >
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+                </svg>
+                <span className="sr-only">Facebook</span>
+              </Link>
+              <Link href="#" className="text-gray-500 hover:text-primary">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-5 w-5"
+                >
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                </svg>
+                <span className="sr-only">Instagram</span>
+              </Link>
+              <Link href="#" className="text-gray-500 hover:text-primary">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="h-5 w-5"
+                >
+                  <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path>
+                </svg>
+                <span className="sr-only">Twitter</span>
+              </Link>
+            </div>
           </div>
         </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className="py-16">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="bg-primary/5 rounded-xl p-8 md:p-12">
-            <h2 className="text-3xl font-bold mb-4 text-center">Stay Updated</h2>
-            <p className="text-muted-foreground mb-8 text-center max-w-2xl mx-auto">
-              Subscribe to our newsletter to receive updates, news, and exclusive offers directly to your inbox.
-            </p>
-            <NewsletterForm />
-          </div>
-        </div>
-      </section>
+      </footer>
     </div>
   )
 }
+
