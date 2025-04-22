@@ -1,3 +1,5 @@
+"use client"
+
 import { formatCurrency } from "@/lib/utils"
 import type { CartItem } from "@/lib/context/cart-context"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -154,4 +156,3 @@ export function Receipt({ items, subtotal, tax, total, orderId, date, onClose }:
     </Card>
   )
 }
-

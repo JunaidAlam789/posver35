@@ -16,10 +16,10 @@ export default async function ProductsPage() {
   const products = await getProducts()
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Products</h2>
-        <div className="flex items-center space-x-2">
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-4 md:pt-6">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-2 md:space-y-0">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Products</h2>
+        <div className="flex flex-wrap items-center gap-2">
           <DownloadTemplate />
           <ImportProducts />
           <Button asChild>
@@ -29,7 +29,9 @@ export default async function ProductsPage() {
           </Button>
         </div>
       </div>
-      <DataTable data={products} columns={columns} />
+      <div className="overflow-x-auto">
+        <DataTable data={products} columns={columns} />
+      </div>
     </div>
   )
 }

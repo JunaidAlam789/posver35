@@ -22,17 +22,17 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">{product.name}</h2>
-        <div className="flex gap-2">
-          <Button variant="outline" asChild>
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-4 md:pt-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">{product.name}</h2>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" asChild className="w-full md:w-auto">
             <Link href="/products">
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Products
             </Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="w-full md:w-auto">
             <Link href={`/products/${product.id}/edit`}>
               <Edit className="mr-2 h-4 w-4" />
               Edit Product
@@ -41,7 +41,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="relative aspect-square rounded-lg overflow-hidden bg-muted">
           <Image
             src={product.image || "/placeholder.svg?height=600&width=600"}
@@ -61,7 +61,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             <CardContent className="space-y-4">
               <div>
                 <h3 className="font-medium">Price</h3>
-                <p className="text-2xl font-bold">{formatCurrency(Number(product.price))}</p>
+                <p className="text-xl md:text-2xl font-bold">{formatCurrency(Number(product.price))}</p>
               </div>
               <div>
                 <h3 className="font-medium">SKU</h3>

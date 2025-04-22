@@ -1,9 +1,9 @@
-'use client'
+"use client"
 
-import { useState, type FormEvent } from 'react'
-import toast from 'react-hot-toast'
-import { upload } from '@vercel/blob/client'
-import ProgressBar from './progress-bar'
+import { useState, type FormEvent } from "react"
+import toast from "react-hot-toast"
+import { upload } from "@vercel/blob/client"
+import ProgressBar from "./progress-bar"
 
 export default function Uploader() {
   const [preview, setPreview] = useState<string | null>(null)
@@ -28,8 +28,8 @@ export default function Uploader() {
     if (file) {
       try {
         const blob = await upload(file.name, file, {
-          access: 'public',
-          handleUploadUrl: '/api/upload',
+          access: "public",
+          handleUploadUrl: "/api/upload",
           onUploadProgress: (progressEvent) => {
             setProgress(progressEvent.percentage)
           },
@@ -41,7 +41,7 @@ export default function Uploader() {
               <div className="p-2">
                 <p className="font-semibold text-gray-900">File uploaded!</p>
                 <p className="mt-1 text-sm text-gray-500">
-                  Your file has been uploaded to{' '}
+                  Your file has been uploaded to{" "}
                   <a
                     className="font-medium text-gray-900 underline"
                     href={blob.url}
@@ -54,7 +54,7 @@ export default function Uploader() {
               </div>
             </div>
           ),
-          { duration: Number.POSITIVE_INFINITY }
+          { duration: Number.POSITIVE_INFINITY },
         )
       } catch (error) {
         if (error instanceof Error) {
@@ -71,13 +71,13 @@ export default function Uploader() {
   function handleFileChange(file: File) {
     toast.dismiss()
 
-    if (file.type.split('/')[0] !== 'image') {
-      toast.error('We only accept image files')
+    if (file.type.split("/")[0] !== "image") {
+      toast.error("We only accept image files")
       return
     }
 
     if (file.size / 1024 / 1024 > 50) {
-      toast.error('File size too big (max 50MB)')
+      toast.error("File size too big (max 50MB)")
       return
     }
 
@@ -125,16 +125,16 @@ export default function Uploader() {
           />
           <div
             className={`${
-              dragActive ? 'border-2 border-black' : ''
+              dragActive ? "border-2 border-black" : ""
             } absolute z-[3] flex h-full w-full flex-col items-center justify-center rounded-md px-10 transition-all ${
               preview
-                ? 'bg-white/80 opacity-0 hover:opacity-100 hover:backdrop-blur-md'
-                : 'bg-white opacity-100 hover:bg-gray-50'
+                ? "bg-white/80 opacity-0 hover:opacity-100 hover:backdrop-blur-md"
+                : "bg-white opacity-100 hover:bg-gray-50"
             }`}
           >
             <svg
               className={`${
-                dragActive ? 'scale-110' : 'scale-100'
+                dragActive ? "scale-110" : "scale-100"
               } h-7 w-7 text-gray-500 transition-all duration-75 group-hover:scale-110 group-active:scale-95`}
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -151,21 +151,13 @@ export default function Uploader() {
               <path d="M12 12v9" />
               <path d="m16 16-4-4-4 4" />
             </svg>
-            <p className="mt-2 text-center text-sm text-gray-500">
-              Drag and drop or click to upload.
-            </p>
-            <p className="mt-2 text-center text-sm text-gray-500">
-              Max file size: 50MB
-            </p>
+            <p className="mt-2 text-center text-sm text-gray-500">Drag and drop or click to upload.</p>
+            <p className="mt-2 text-center text-sm text-gray-500">Max file size: 50MB</p>
             <span className="sr-only">Photo upload</span>
           </div>
           {preview && (
             // eslint-disable-next-line @next/next/no-img-element -- We want a simple preview here, no <Image> needed
-            <img
-              src={preview}
-              alt="Preview"
-              className="h-full w-full rounded-md object-cover"
-            />
+            <img src={preview} alt="Preview" className="h-full w-full rounded-md object-cover" />
           )}
         </label>
         <div className="mt-1 flex rounded-md shadow-sm">

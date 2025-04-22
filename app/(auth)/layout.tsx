@@ -6,4 +6,3 @@ export default function AuthLayout({
 }) {
   return <div className="flex min-h-screen flex-col">{children}</div>
 }
-

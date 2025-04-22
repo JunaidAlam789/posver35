@@ -17,17 +17,17 @@ export default async function AnalyticsPage() {
   const categories = await getCategories()
 
   return (
-    <div className="flex-1 space-y-4 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Analytics</h2>
+    <div className="flex-1 space-y-4 p-4 md:p-8 pt-4 md:pt-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Analytics</h2>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
+            <div className="text-xl md:text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">+20.1% from last month</p>
           </CardContent>
         </Card>
@@ -36,7 +36,7 @@ export default async function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Orders</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+{stats.totalOrders}</div>
+            <div className="text-xl md:text-2xl font-bold">+{stats.totalOrders}</div>
             <p className="text-xs text-muted-foreground">+180.1% from last month</p>
           </CardContent>
         </Card>
@@ -45,7 +45,7 @@ export default async function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Products</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalProducts}</div>
+            <div className="text-xl md:text-2xl font-bold">{stats.totalProducts}</div>
             <p className="text-xs text-muted-foreground">+19% from last month</p>
           </CardContent>
         </Card>
@@ -54,21 +54,21 @@ export default async function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Active Customers</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalCustomers}</div>
+            <div className="text-xl md:text-2xl font-bold">{stats.totalCustomers}</div>
             <p className="text-xs text-muted-foreground">+201 since last hour</p>
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
+        <Card className="col-span-1 lg:col-span-4">
           <CardHeader>
             <CardTitle>Overview</CardTitle>
           </CardHeader>
-          <CardContent className="pl-2">
+          <CardContent className="pl-0 md:pl-2">
             <Overview />
           </CardContent>
         </Card>
-        <Card className="col-span-3">
+        <Card className="col-span-1 lg:col-span-3">
           <CardHeader>
             <CardTitle>Recent Sales</CardTitle>
             <CardDescription>You made {recentOrders.length} sales this month.</CardDescription>
@@ -78,8 +78,8 @@ export default async function AnalyticsPage() {
           </CardContent>
         </Card>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="col-span-4">
+      <div className="grid gap-4 grid-cols-1 lg:grid-cols-7">
+        <Card className="col-span-1 lg:col-span-4">
           <CardHeader>
             <CardTitle>Sales Distribution</CardTitle>
           </CardHeader>
@@ -87,7 +87,7 @@ export default async function AnalyticsPage() {
             <SalesChart />
           </CardContent>
         </Card>
-        <Card className="col-span-3">
+        <Card className="col-span-1 lg:col-span-3">
           <CardHeader>
             <CardTitle>Stock Levels</CardTitle>
             <CardDescription>Current inventory status across categories.</CardDescription>
@@ -100,4 +100,3 @@ export default async function AnalyticsPage() {
     </div>
   )
 }
-

@@ -51,4 +51,3 @@ export function StockLevels({ products = [], categories = [] }: StockLevelsProps
     </div>
   )
 }
-

@@ -34,4 +34,3 @@ export function RecentOrders({ orders }: RecentOrdersProps) {
     </div>
   )
 }
-

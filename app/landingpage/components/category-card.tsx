@@ -36,4 +36,3 @@ export function CategoryCard({ category }: CategoryCardProps) {
     </Link>
   )
 }
-
