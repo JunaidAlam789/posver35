@@ -57,7 +57,7 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
       <CardContent className="p-4">
-        <div className="text-sm text-muted-foreground mb-1">{product.category?.name || "Uncategorized"}</div>
+        <div className="text-sm text-muted-foreground mb-1">{product.categoryId || "Uncategorized"}</div>
         <h3 className="font-medium text-lg line-clamp-1">{product.name}</h3>
         <p className="text-primary font-bold mt-1">{formatCurrency(Number(product.price))}</p>
       </CardContent>

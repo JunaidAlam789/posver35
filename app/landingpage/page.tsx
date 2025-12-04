@@ -8,14 +8,17 @@ import { CategoryCard } from "./components/category-card"
 import { TestimonialCard } from "./components/testimonial-card"
 import { NewsletterForm } from "./components/newsletter-form"
 import { MobileNav } from "./components/mobile-nav"
+import { Product } from "@/lib/data/schema"
 
 export default async function LandingPage() {
   // Get featured products and categories
   const products = await getProducts()
   const categories = await getCategories()
 
-  // Get featured products (first 4)
-  const featuredProducts = products.slice(0, 4)
+  console.log("Products:", products)  
+
+  // Get featured products (first 4) and filter out products without images
+  const featuredProducts = products.filter((p): p is typeof p & { image: string } => p.image !== null).slice(0, 4)
 
   return (
     <div className="flex flex-col min-h-screen">

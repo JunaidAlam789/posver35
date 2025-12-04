@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -78,21 +79,11 @@ model SalesAnalytics {
   @@index([year, month, day])
 }
 
-enum Role {  
-  ADMIN
-  STAFF
-  CUSTOMER
-}
-
-
-
 model User {
   id     String  @id
   name   String
   email  String  @unique
   role   String  @default("customer")
-  //role Role @default(CUSTOMER)
   avatar String?
   Order  Order[]
 }
-

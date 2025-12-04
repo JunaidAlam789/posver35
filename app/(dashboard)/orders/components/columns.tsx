@@ -30,7 +30,8 @@ export const columns: ColumnDef<Order>[] = [
     header: ({ column }) => <DataTableColumnHeader column={column} title="Customer" />,
     cell: ({ row }) => {
       const customer = users.find((user) => user.id === row.getValue("customerId"))
-      return <div>{customer?.name}</div>
+      /* return <div>{users[0].name}</div>  */
+      return <div>{row.getValue("customerId")}</div> 
     },
   },
   {
@@ -50,6 +51,11 @@ export const columns: ColumnDef<Order>[] = [
                   : status === "CANCELLED"
                     ? "destructive"
                     : "secondary"
+                    // :status === "RETURNED"
+                    //   ? "secondary"
+                    //   :status === "REFUNDED"
+                    //   ? "destructive"
+                    //   : "secondary"
           }
         >
           {status.toLowerCase()}
@@ -109,6 +115,12 @@ export const columns: ColumnDef<Order>[] = [
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => updateOrderStatus(order.id, "COMPLETED")}>
               Mark as completed
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => updateOrderStatus(order.id, "RETURNED")}>
+              Mark as returned
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => updateOrderStatus(order.id, "REFUNDED")}>
+              Mark as refunded              
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => updateOrderStatus(order.id, "CANCELLED")}>Cancel order</DropdownMenuItem>
           </DropdownMenuContent>

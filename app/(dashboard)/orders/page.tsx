@@ -9,6 +9,7 @@ export const metadata = {
 
 export default async function OrdersPage() {
   const orders = await getOrders()
+  console.log("Orders:", orders)
 
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-4 md:pt-6">

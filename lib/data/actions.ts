@@ -14,11 +14,11 @@ type ImportResult = {
 }
 
 // Product actions
-export async function getProducts(): Promise<Product[]> {
+export async function getProducts() {
   try {
     const products = await db.product.findMany({
       include: {
-        category: true,
+        Category: true,
       },
     })
     return products
@@ -33,7 +33,7 @@ export async function getProduct(id: string): Promise<Product | null> {
     const product = await db.product.findUnique({
       where: { id },
       include: {
-        category: true,
+        Category: true,
       },
     })
     return product
@@ -42,8 +42,8 @@ export async function getProduct(id: string): Promise<Product | null> {
     return null
   }
 }
-
 export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt">): Promise<Product> {
+//export async function createProduct(product: Product): Promise<Product> {
   try {
     const newProduct = await db.product.create({
       data: product,
@@ -133,15 +133,16 @@ export async function createUser(customer: Omit<User, "id" | "createdAt" | "upda
 // Order actions
 export async function getOrders(): Promise<Order[]> {
   try {
-    const orders = await db.order.findMany({
-      include: {
-        customer: true,
-        items: {
-          include: {
-            product: true,
-          },
-        },
-      },
+    const orders: Order[] = await db.order.findMany({
+       include: {
+        User: true,
+        OrderItem: true
+       /*  {
+           include: {
+            Product: true,
+          }, 
+        }, */
+      }, 
       orderBy: {
         createdAt: "desc",
       },
@@ -155,7 +156,7 @@ export async function getOrders(): Promise<Order[]> {
 
 export async function getOrder(id: string): Promise<Order | null> {
   try {
-    const order = await db.order.findUnique({
+    const order: Order = await db.order.findUnique({
       where: { id },
       include: {
         customer: true,
@@ -386,7 +387,7 @@ export async function getDashboardStats() {
     }),
   ])
 
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
+  const totalRevenue = orders.reduce((sum: any, order: { total: any }) => sum + order.total, 0)
 
   return {
     totalOrders,

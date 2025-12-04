@@ -48,7 +48,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
 
   const defaultValues: Partial<ProductFormValues> = {
     name: product?.name || "",
-    description: product?.description || "",
+    description: product?.description, // || null,
     price: product?.price ? Number(product.price) : undefined,
     sku: product?.sku || "",
     stock: product?.stock || 0,
@@ -69,12 +69,12 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         // Update existing product
         await updateProduct(product.id, {
           name: data.name,
-          description: data.description || null,
+          description: data.description || "",
           price: data.price,
           sku: data.sku,
           stock: data.stock,
           categoryId: data.categoryId,
-          image: data.image || null,
+          image: data.image || ""
         })
         toast({
           title: "Product updated",
@@ -84,12 +84,12 @@ export function ProductForm({ product, categories }: ProductFormProps) {
         // Create new product
         await createProduct({
           name: data.name,
-          description: data.description || null,
+          description: data.description || "",
           price: data.price,
           sku: data.sku,
           stock: data.stock,
           categoryId: data.categoryId,
-          image: data.image || null,
+          image: data.image || "",
         })
         toast({
           title: "Product created",
@@ -175,7 +175,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
               <FormField
                 control={form.control}
                 name="name"
-                render={({ field }) => (
+                render={({ field }: {field: any}) => (
                   <FormItem>
                     <FormLabel>Product Name</FormLabel>
                     <FormControl>
@@ -188,7 +188,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
               <FormField
                 control={form.control}
                 name="sku"
-                render={({ field }) => (
+                render={({ field }: {field: any}) => (
                   <FormItem>
                     <FormLabel>SKU</FormLabel>
                     <FormControl>
@@ -204,7 +204,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
             <FormField
               control={form.control}
               name="description"
-              render={({ field }) => (
+              render={({ field }: {field: any}) => (
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
@@ -224,7 +224,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
               <FormField
                 control={form.control}
                 name="price"
-                render={({ field }) => (
+                render={({ field }: {field: any}) => (
                   <FormItem>
                     <FormLabel>Price</FormLabel>
                     <FormControl>
@@ -237,7 +237,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
               <FormField
                 control={form.control}
                 name="stock"
-                render={({ field }) => (
+                render={({ field }: {field: any}) => (
                   <FormItem>
                     <FormLabel>Stock</FormLabel>
                     <FormControl>
@@ -250,7 +250,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
               <FormField
                 control={form.control}
                 name="categoryId"
-                render={({ field }) => (
+                render={({ field }: {field: any}) => (
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
@@ -276,7 +276,7 @@ export function ProductForm({ product, categories }: ProductFormProps) {
             <FormField
               control={form.control}
               name="image"
-              render={({ field }) => (
+              render={({ field }: { field: any }) => (
                 <FormItem>
                   <FormLabel>Product Image</FormLabel>
                   <div className="space-y-4">
