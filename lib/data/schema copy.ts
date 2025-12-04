@@ -1,51 +1,55 @@
 
-export enum Role {
-  ADMIN = "ADMIN",
-  STAFF = "STAFF",
-  CUSTOMER = "CUSTOMER",
+enum Role {
+  ADMINS,
+  STAFFS,
+  CUSTOMERS
 }
+
 
 export type User = {
   id: string
   name: string
   email: string
-  // Note: Prisma `User.role` is a string in schema.prisma; keep it as string
+  //role: "ADMIN" | "STAFF" | "CUSTOMER"
+  //role: Role
   role: string
-  // `avatar` is nullable in Prisma (String?) so allow `string | null`
   avatar?: string | null
-  // Relations
-  Order?: Order[]
 }
+
+// enum Role {
+//   ADMIN = "ADMIN",
+//   STAFF = "STAFF",
+//   CUSTOMER = "CUSTOMER",
+// }
+
 
 export type Product = {
   id: string
   name: string
-  description?: string | null
+  description: string | null
   price: number
-  image?: string | null
+  image: string | null
   sku: string
   categoryId: string
   stock: number
-  Category?: Category
-  OrderItem?: OrderItem[]
+  //category?: Category
 }
 
 export type Category = {
   id: string
   name: string
-  description?: string | null
-  Product?: Product[]
+  description: string | null
 }
 
 export type Order = {
   id: string
   customerId: string
+  //status: "PENDING" | "PROCESSING" | "COMPLETED" | "DELIVERED" | "CANCELLED"
   status: string
-  total: number
+  total: number  
   createdAt: Date
-  updatedAt: Date
-  User?: User
-  OrderItem?: OrderItem[]
+  User: User  
+  OrderItem: OrderItem[]
 }
 
 export type OrderItem = {
@@ -54,11 +58,10 @@ export type OrderItem = {
   productId: string
   quantity: number
   price: number
-  Order?: Order
-  Product?: Product
+  Order: Order
+  Product: Product
 }
 
-// Payment isn't present in Prisma schema; keep if used elsewhere in the app
 export type Payment = {
   id: string
   orderId: string

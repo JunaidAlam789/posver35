@@ -14,7 +14,7 @@ type ImportResult = {
 }
 
 // Product actions
-export async function getProducts() {
+export async function getProducts(): Promise<Product[]> {
   try {
     const products = await db.product.findMany({
       include: {
@@ -42,7 +42,9 @@ export async function getProduct(id: string): Promise<Product | null> {
     return null
   }
 }
-export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt">): Promise<Product> {
+type CreateProductInput = Omit<Product, "id" | "Category" | "OrderItem">
+
+export async function createProduct(product: CreateProductInput): Promise<Product> {
 //export async function createProduct(product: Product): Promise<Product> {
   try {
     const newProduct = await db.product.create({
@@ -117,7 +119,9 @@ export async function getUser(id: string): Promise<User | null> {
   }
 }
 
-export async function createUser(customer: Omit<User, "id" | "createdAt" | "updatedAt">): Promise<User> {
+type CreateUserInput = Omit<User, "id" | "Order">
+
+export async function createUser(customer: CreateUserInput): Promise<User> {
   try {
     const newCustomer = await db.user.create({
       data: customer,
@@ -133,20 +137,15 @@ export async function createUser(customer: Omit<User, "id" | "createdAt" | "upda
 // Order actions
 export async function getOrders(): Promise<Order[]> {
   try {
-    const orders: Order[] = await db.order.findMany({
-       include: {
+    const orders = (await db.order.findMany({
+      include: {
         User: true,
-        OrderItem: true
-       /*  {
-           include: {
-            Product: true,
-          }, 
-        }, */
-      }, 
+        OrderItem: true,
+      },
       orderBy: {
         createdAt: "desc",
       },
-    })
+    })) as Order[]
     return orders
   } catch (error) {
     console.error("Failed to fetch orders:", error)
@@ -156,17 +155,17 @@ export async function getOrders(): Promise<Order[]> {
 
 export async function getOrder(id: string): Promise<Order | null> {
   try {
-    const order: Order = await db.order.findUnique({
+    const order = (await db.order.findUnique({
       where: { id },
       include: {
-        customer: true,
-        items: {
+        User: true,
+        OrderItem: {
           include: {
-            product: true,
+            Product: true,
           },
         },
       },
-    })
+    })) as Order | null
     return order
   } catch (error) {
     console.error(`Failed to fetch order with id ${id}:`, error)
@@ -201,12 +200,12 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     const orderNumber = `ORD-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
 
     // Check if customer exists, if not create a new one
-    let customer = await db.customer.findUnique({
+    let customer = await db.user.findUnique({
       where: { email: input.customerInfo.email },
     })
 
     if (!customer) {
-      customer = await db.customer.create({
+      customer = await db.user.create({
         data: {
           name: input.customerInfo.name,
           email: input.customerInfo.email,
@@ -240,10 +239,10 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
         },
       },
       include: {
-        customer: true,
-        items: {
+        User: true,
+        OrderItem: {
           include: {
-            product: true,
+            Product: true,
           },
         },
       },
@@ -404,17 +403,17 @@ export async function getRecentOrders(limit = 5) {
       createdAt: "desc",
     },
     include: {
-      customer: true,
-      items: {
+      User: true,
+      OrderItem: {
         include: {
-          product: true,
+          Product: true,
         },
       },
     },
   })
 }
 
-export async function getLowStockProducts(threshold = 10) {
+export async function getLowStockProducts(threshold = 10): Promise<Product[]> {
   return db.product.findMany({
     where: {
       stock: {
@@ -422,7 +421,7 @@ export async function getLowStockProducts(threshold = 10) {
       },
     },
     include: {
-      category: true,
+      Category: true,
     },
   })
 }
