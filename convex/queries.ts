@@ -112,17 +112,17 @@ export const getOrder = query({
 export const getDashboardStats = query({
   args: {},
   handler: async (ctx) => {
-    const totalOrders = await ctx.db.query("orders").count();
-    const totalProducts = await ctx.db.query("products").count();
-    const totalCustomersResult = await ctx.db
-      .query("users")
-      .collect();
-    const totalCustomers = totalCustomersResult.filter(
+    const ordersResult = await ctx.db.query("orders").collect();
+    const productsResult = await ctx.db.query("products").collect();
+    const usersResult = await ctx.db.query("users").collect();
+
+    const totalOrders = ordersResult.length;
+    const totalProducts = productsResult.length;
+    const totalCustomers = usersResult.filter(
       (u) => u.role === "CUSTOMER"
     ).length;
 
-    const orders = await ctx.db.query("orders").collect();
-    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+    const totalRevenue = ordersResult.reduce((sum, order) => sum + order.total, 0);
 
     return {
       totalOrders,
