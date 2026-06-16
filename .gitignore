@@ -25,3 +25,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Prisma (deprecated, using Convex)
+/prisma/
+/lib/generated/
+/generated/
+
+# Convex
+.convex/
+.env.local

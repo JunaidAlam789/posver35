@@ -1,12 +1,15 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { db } from "@/lib/db"
 import type { Product, Category, User, Order } from "@/lib/data/schema"
 import { parse } from "papaparse"
 import * as XLSX from "xlsx"
+import { api } from "@/convex/_generated/api"
+import { ConvexHttpClient } from "convex/browser"
 
-// Add this type definition
+// Create a Convex client for server actions
+const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+
 type ImportResult = {
   success: boolean
   count?: number
@@ -16,12 +19,8 @@ type ImportResult = {
 // Product actions
 export async function getProducts(): Promise<Product[]> {
   try {
-    const products = await db.product.findMany({
-      include: {
-        Category: true,
-      },
-    })
-    return products
+    const products = await convex.query(api.queries.getProducts)
+    return products as Product[]
   } catch (error) {
     console.error("Failed to fetch products:", error)
     return []
@@ -30,28 +29,21 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getProduct(id: string): Promise<Product | null> {
   try {
-    const product = await db.product.findUnique({
-      where: { id },
-      include: {
-        Category: true,
-      },
-    })
-    return product
+    const product = await convex.query(api.queries.getProduct, { id: id as any })
+    return product as Product | null
   } catch (error) {
     console.error(`Failed to fetch product with id ${id}:`, error)
     return null
   }
 }
+
 type CreateProductInput = Omit<Product, "id" | "Category" | "OrderItem">
 
 export async function createProduct(product: CreateProductInput): Promise<Product> {
-//export async function createProduct(product: Product): Promise<Product> {
   try {
-    const newProduct = await db.product.create({
-      data: product,
-    })
+    const newProduct = await convex.mutation(api.mutations.createProduct, product as any)
     revalidatePath("/products")
-    return newProduct
+    return newProduct as Product
   } catch (error) {
     console.error("Failed to create product:", error)
     throw error
@@ -60,13 +52,13 @@ export async function createProduct(product: CreateProductInput): Promise<Produc
 
 export async function updateProduct(id: string, product: Partial<Product>): Promise<Product> {
   try {
-    const updatedProduct = await db.product.update({
-      where: { id },
-      data: product,
+    const updatedProduct = await convex.mutation(api.mutations.updateProduct, {
+      id: id as any,
+      ...product,
     })
     revalidatePath(`/products/${id}`)
     revalidatePath("/products")
-    return updatedProduct
+    return updatedProduct as Product
   } catch (error) {
     console.error(`Failed to update product with id ${id}:`, error)
     throw error
@@ -75,21 +67,20 @@ export async function updateProduct(id: string, product: Partial<Product>): Prom
 
 export async function deleteProduct(id: string): Promise<Product> {
   try {
-    const deletedProduct = await db.product.delete({
-      where: { id },
-    })
+    const deletedProduct = await convex.mutation(api.mutations.deleteProduct, { id: id as any })
     revalidatePath("/products")
-    return deletedProduct
+    return deletedProduct as Product
   } catch (error) {
     console.error(`Failed to delete product with id ${id}:`, error)
     throw error
   }
 }
+
 // Category actions
 export async function getCategories(): Promise<Category[]> {
   try {
-    const categories = await db.category.findMany()
-    return categories
+    const categories = await convex.query(api.queries.getCategories)
+    return categories as Category[]
   } catch (error) {
     console.error("Failed to fetch categories:", error)
     return []
@@ -99,22 +90,20 @@ export async function getCategories(): Promise<Category[]> {
 // Customer actions
 export async function getUsers(): Promise<User[]> {
   try {
-    const customers = await db.user.findMany()
-    return customers
+    const users = await convex.query(api.queries.getUsers)
+    return users as User[]
   } catch (error) {
-    console.error("Failed to fetch customers:", error)
+    console.error("Failed to fetch users:", error)
     return []
   }
 }
 
 export async function getUser(id: string): Promise<User | null> {
   try {
-    const customer = await db.user.findUnique({
-      where: { id },
-    })
-    return customer
+    const user = await convex.query(api.queries.getUser, { id: id as any })
+    return user as User | null
   } catch (error) {
-    console.error(`Failed to fetch customer with id ${id}:`, error)
+    console.error(`Failed to fetch user with id ${id}:`, error)
     return null
   }
 }
@@ -123,13 +112,11 @@ type CreateUserInput = Omit<User, "id" | "Order">
 
 export async function createUser(customer: CreateUserInput): Promise<User> {
   try {
-    const newCustomer = await db.user.create({
-      data: customer,
-    })
+    const newUser = await convex.mutation(api.mutations.createUser, customer as any)
     revalidatePath("/customers")
-    return newCustomer
+    return newUser as User
   } catch (error) {
-    console.error("Failed to create customer:", error)
+    console.error("Failed to create user:", error)
     throw error
   }
 }
@@ -137,16 +124,8 @@ export async function createUser(customer: CreateUserInput): Promise<User> {
 // Order actions
 export async function getOrders(): Promise<Order[]> {
   try {
-    const orders = (await db.order.findMany({
-      include: {
-        User: true,
-        OrderItem: true,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    })) as Order[]
-    return orders
+    const orders = await convex.query(api.queries.getOrders)
+    return orders as Order[]
   } catch (error) {
     console.error("Failed to fetch orders:", error)
     return []
@@ -155,18 +134,8 @@ export async function getOrders(): Promise<Order[]> {
 
 export async function getOrder(id: string): Promise<Order | null> {
   try {
-    const order = (await db.order.findUnique({
-      where: { id },
-      include: {
-        User: true,
-        OrderItem: {
-          include: {
-            Product: true,
-          },
-        },
-      },
-    })) as Order | null
-    return order
+    const order = await convex.query(api.queries.getOrder, { id: id as any })
+    return order as Order | null
   } catch (error) {
     console.error(`Failed to fetch order with id ${id}:`, error)
     return null
@@ -196,72 +165,33 @@ export type CreateOrderInput = {
 
 export async function createOrder(input: CreateOrderInput): Promise<Order> {
   try {
-    // Generate a random order number
-    const orderNumber = `ORD-${Math.random().toString(36).substring(2, 10).toUpperCase()}`
-
     // Check if customer exists, if not create a new one
-    let customer = await db.user.findUnique({
-      where: { email: input.customerInfo.email },
+    let customer = await convex.query(api.queries.getUserByEmail, {
+      email: input.customerInfo.email,
     })
 
     if (!customer) {
-      customer = await db.user.create({
-        data: {
-          name: input.customerInfo.name,
-          email: input.customerInfo.email,
-          address: input.customerInfo.address,
-        },
+      customer = await convex.mutation(api.mutations.createUser, {
+        name: input.customerInfo.name,
+        email: input.customerInfo.email,
+        role: "CUSTOMER",
       })
     }
 
     // Create the order
-    const order = await db.order.create({
-      data: {
-        orderNumber,
-        customerId: customer.id,
-        subtotal: input.subtotal,
-        tax: input.tax,
-        total: input.total,
-        paymentMethod: input.paymentMethod,
-        notes: input.notes,
-        shippingAddress: {
-          address: input.customerInfo.address,
-          city: input.customerInfo.city,
-          state: input.customerInfo.state,
-          zipCode: input.customerInfo.zipCode,
-        },
-        items: {
-          create: input.items.map((item) => ({
-            productId: item.productId,
-            quantity: item.quantity,
-            price: item.price,
-          })),
-        },
-      },
-      include: {
-        User: true,
-        OrderItem: {
-          include: {
-            Product: true,
-          },
-        },
-      },
+    const order = await convex.mutation(api.mutations.createOrder, {
+      customerId: customer._id,
+      status: "pending",
+      total: input.total,
+      items: input.items.map((item) => ({
+        productId: item.productId as any,
+        quantity: item.quantity,
+        price: item.price,
+      })),
     })
 
-    // Update product stock
-    for (const item of input.items) {
-      await db.product.update({
-        where: { id: item.productId },
-        data: {
-          stock: {
-            decrement: item.quantity,
-          },
-        },
-      })
-    }
-
     revalidatePath("/orders")
-    return order
+    return order as Order
   } catch (error) {
     console.error("Failed to create order:", error)
     throw error
@@ -270,15 +200,13 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
 
 export async function updateOrderStatus(id: string, status: string): Promise<Order> {
   try {
-    const updatedOrder = await db.order.update({
-      where: { id },
-      data: {
-        status,
-      },
+    const updatedOrder = await convex.mutation(api.mutations.updateOrderStatus, {
+      id: id as any,
+      status,
     })
     revalidatePath(`/orders/${id}`)
     revalidatePath("/orders")
-    return updatedOrder
+    return updatedOrder as Order
   } catch (error) {
     console.error(`Failed to update order status with id ${id}:`, error)
     throw error
@@ -297,7 +225,6 @@ export async function importProducts(formData: FormData): Promise<ImportResult> 
 
     // Parse the file based on its extension
     if (fileExtension === "csv") {
-      // Parse CSV
       const text = await file.text()
       const result = parse(text, {
         header: true,
@@ -313,7 +240,6 @@ export async function importProducts(formData: FormData): Promise<ImportResult> 
 
       products = result.data
     } else if (fileExtension === "xlsx" || fileExtension === "xls") {
-      // Parse Excel
       const arrayBuffer = await file.arrayBuffer()
       const workbook = XLSX.read(arrayBuffer)
       const worksheet = workbook.Sheets[workbook.SheetNames[0]]
@@ -328,12 +254,10 @@ export async function importProducts(formData: FormData): Promise<ImportResult> 
 
     // Validate and transform the data
     const validatedProducts = products.map((product) => {
-      // Validate required fields
       if (!product.name || !product.price || !product.sku || !product.categoryId) {
         throw new Error(`Missing required fields for product: ${JSON.stringify(product)}`)
       }
 
-      // Transform to correct types
       return {
         name: String(product.name),
         description: product.description ? String(product.description) : "",
@@ -348,9 +272,7 @@ export async function importProducts(formData: FormData): Promise<ImportResult> 
     // Insert products into the database
     const createdProducts = await Promise.all(
       validatedProducts.map((product) =>
-        db.product.create({
-          data: product,
-        }),
+        convex.mutation(api.mutations.createProduct, product as any),
       ),
     )
 
@@ -371,58 +293,14 @@ export async function importProducts(formData: FormData): Promise<ImportResult> 
 
 // Stats
 export async function getDashboardStats() {
-  const [totalOrders, totalProducts, totalCustomers, orders] = await Promise.all([
-    db.order.count(),
-    db.product.count(),
-    db.user.count({
-      where: {
-        role: "CUSTOMER",
-      },
-    }),
-    db.order.findMany({
-      select: {
-        total: true,
-      },
-    }),
-  ])
-
-  const totalRevenue = orders.reduce((sum: any, order: { total: any }) => sum + order.total, 0)
-
-  return {
-    totalOrders,
-    totalProducts,
-    totalCustomers,
-    totalRevenue,
-  }
+  const stats = await convex.query(api.queries.getDashboardStats)
+  return stats
 }
 
 export async function getRecentOrders(limit = 5) {
-  return db.order.findMany({
-    take: limit,
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      User: true,
-      OrderItem: {
-        include: {
-          Product: true,
-        },
-      },
-    },
-  })
+  return convex.query(api.queries.getRecentOrders, { limit })
 }
 
 export async function getLowStockProducts(threshold = 10): Promise<Product[]> {
-  return db.product.findMany({
-    where: {
-      stock: {
-        lte: threshold,
-      },
-    },
-    include: {
-      Category: true,
-    },
-  })
+  return convex.query(api.queries.getLowStockProducts, { threshold }) as Promise<Product[]>
 }
-

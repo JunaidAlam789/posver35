@@ -1,4 +1,6 @@
 
+import { Id } from "convex/values"
+
 export enum Role {
   ADMIN = "ADMIN",
   STAFF = "STAFF",
@@ -6,59 +8,60 @@ export enum Role {
 }
 
 export type User = {
-  id: string
+  _id?: Id<"users">
+  id?: string
   name: string
   email: string
-  // Note: Prisma `User.role` is a string in schema.prisma; keep it as string
   role: string
-  // `avatar` is nullable in Prisma (String?) so allow `string | null`
   avatar?: string | null
-  // Relations
   Order?: Order[]
 }
 
 export type Product = {
-  id: string
+  _id?: Id<"products">
+  id?: string
   name: string
   description?: string | null
   price: number
   image?: string | null
   sku: string
-  categoryId: string
+  categoryId: Id<"categories"> | string
   stock: number
   Category?: Category
   OrderItem?: OrderItem[]
 }
 
 export type Category = {
-  id: string
+  _id?: Id<"categories">
+  id?: string
   name: string
   description?: string | null
   Product?: Product[]
 }
 
 export type Order = {
-  id: string
-  customerId: string
+  _id?: Id<"orders">
+  id?: string
+  customerId: Id<"users"> | string
   status: string
   total: number
-  createdAt: Date
-  updatedAt: Date
+  createdAt: number | Date
+  updatedAt: number | Date
   User?: User
   OrderItem?: OrderItem[]
 }
 
 export type OrderItem = {
-  id: string
-  orderId: string
-  productId: string
+  _id?: Id<"orderItems">
+  id?: string
+  orderId: Id<"orders"> | string
+  productId: Id<"products"> | string
   quantity: number
   price: number
   Order?: Order
   Product?: Product
 }
 
-// Payment isn't present in Prisma schema; keep if used elsewhere in the app
 export type Payment = {
   id: string
   orderId: string
@@ -66,4 +69,5 @@ export type Payment = {
   status: "PENDING" | "COMPLETED" | "FAILED" | "REFUNDED"
   method: "CREDIT_CARD" | "PAYPAL" | "CASH"
 }
+
 
