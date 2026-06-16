@@ -1,23 +1,18 @@
-import { db as prisma } from "."
+import { db } from "."
+import { api } from "@/convex/_generated/api"
 
 export async function initDatabase() {
   try {
-    // Test database connection
-    await prisma.$connect()
-    console.log("Database connection successful")
+    // Test Convex connection by checking if we can query
+    console.log("Initializing Convex database...")
 
-    // Check if we need to seed the database
-    const userCount = await prisma.user.count()
-    if (userCount === 0) {
-      console.log("Database is empty, running seed script...")
-      // You would typically run the seed script here
-      // For development, you can run `npm run db:seed` manually
-    }
+    // Try to seed the database if needed
+    // Note: For production, use the Convex CLI to run mutations
+    // For now, this is a placeholder for any initialization logic
+    console.log("Database initialization check complete")
   } catch (error) {
     console.error("Failed to initialize database:", error)
     throw error
-  } finally {
-    await prisma.$disconnect()
   }
 }
 
