@@ -8,6 +8,12 @@ export default async function DashboardPage() {
   const stats = await getDashboardStats()
   const recentOrders = await getRecentOrders(5)
 
+  // Provide default values if Convex is not initialized
+  const totalRevenue = stats?.totalRevenue ?? 0
+  const totalOrders = stats?.totalOrders ?? 0
+  const totalProducts = stats?.totalProducts ?? 0
+  const totalCustomers = stats?.totalCustomers ?? 0
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-4 md:pt-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
@@ -20,7 +26,7 @@ export default async function DashboardPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl md:text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
+            <div className="text-xl md:text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
           </CardContent>
         </Card>
         <Card>
@@ -29,7 +35,7 @@ export default async function DashboardPage() {
             <ShoppingCart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl md:text-2xl font-bold">+{stats.totalOrders}</div>
+            <div className="text-xl md:text-2xl font-bold">+{totalOrders}</div>
           </CardContent>
         </Card>
         <Card>
@@ -38,7 +44,7 @@ export default async function DashboardPage() {
             <Package className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl md:text-2xl font-bold">{stats.totalProducts}</div>
+            <div className="text-xl md:text-2xl font-bold">{totalProducts}</div>
           </CardContent>
         </Card>
         <Card>
@@ -47,7 +53,7 @@ export default async function DashboardPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-xl md:text-2xl font-bold">{stats.totalCustomers}</div>
+            <div className="text-xl md:text-2xl font-bold">{totalCustomers}</div>
           </CardContent>
         </Card>
       </div>

@@ -8,7 +8,10 @@ import { api } from "@/convex/_generated/api"
 import { ConvexHttpClient } from "convex/browser"
 
 // Create a Convex client for server actions
-const convex = new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL!)
+// Only initialize if the URL is available (during runtime, not during build)
+const convex = process.env.NEXT_PUBLIC_CONVEX_URL 
+  ? new ConvexHttpClient(process.env.NEXT_PUBLIC_CONVEX_URL)
+  : null
 
 type ImportResult = {
   success: boolean
@@ -19,6 +22,10 @@ type ImportResult = {
 // Product actions
 export async function getProducts(): Promise<Product[]> {
   try {
+    if (!convex) {
+      console.error("Convex client not initialized")
+      return []
+    }
     const products = await convex.query(api.queries.getProducts)
     return products as Product[]
   } catch (error) {
@@ -29,6 +36,10 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getProduct(id: string): Promise<Product | null> {
   try {
+    if (!convex) {
+      console.error("Convex client not initialized")
+      return null
+    }
     if (!id) {
       console.error("Product ID is required")
       return null
@@ -45,6 +56,9 @@ type CreateProductInput = Omit<Product, "id" | "Category" | "OrderItem">
 
 export async function createProduct(product: CreateProductInput): Promise<Product> {
   try {
+    if (!convex) {
+      throw new Error("Convex client not initialized")
+    }
     const newProduct = await convex.mutation(api.mutations.createProduct, product as any)
     revalidatePath("/products")
     return newProduct as Product
@@ -56,6 +70,9 @@ export async function createProduct(product: CreateProductInput): Promise<Produc
 
 export async function updateProduct(id: string, product: Partial<Product>): Promise<Product> {
   try {
+    if (!convex) {
+      throw new Error("Convex client not initialized")
+    }
     if (!id) {
       throw new Error("Product ID is required")
     }
@@ -74,6 +91,9 @@ export async function updateProduct(id: string, product: Partial<Product>): Prom
 
 export async function deleteProduct(id: string): Promise<Product> {
   try {
+    if (!convex) {
+      throw new Error("Convex client not initialized")
+    }
     if (!id) {
       throw new Error("Product ID is required")
     }
@@ -89,6 +109,10 @@ export async function deleteProduct(id: string): Promise<Product> {
 // Category actions
 export async function getCategories(): Promise<Category[]> {
   try {
+    if (!convex) {
+      console.error("Convex client not initialized")
+      return []
+    }
     const categories = await convex.query(api.queries.getCategories)
     return categories as Category[]
   } catch (error) {
@@ -100,6 +124,10 @@ export async function getCategories(): Promise<Category[]> {
 // Customer actions
 export async function getUsers(): Promise<User[]> {
   try {
+    if (!convex) {
+      console.error("Convex client not initialized")
+      return []
+    }
     const users = await convex.query(api.queries.getUsers)
     return users as User[]
   } catch (error) {
@@ -110,6 +138,10 @@ export async function getUsers(): Promise<User[]> {
 
 export async function getUser(id: string): Promise<User | null> {
   try {
+    if (!convex) {
+      console.error("Convex client not initialized")
+      return null
+    }
     if (!id) {
       console.error("User ID is required")
       return null
@@ -126,6 +158,9 @@ type CreateUserInput = Omit<User, "id" | "Order">
 
 export async function createUser(customer: CreateUserInput): Promise<User> {
   try {
+    if (!convex) {
+      throw new Error("Convex client not initialized")
+    }
     const newUser = await convex.mutation(api.mutations.createUser, customer as any)
     revalidatePath("/customers")
     return newUser as User
@@ -138,6 +173,10 @@ export async function createUser(customer: CreateUserInput): Promise<User> {
 // Order actions
 export async function getOrders(): Promise<Order[]> {
   try {
+    if (!convex) {
+      console.error("Convex client not initialized")
+      return []
+    }
     const orders = await convex.query(api.queries.getOrders)
     return orders as Order[]
   } catch (error) {
@@ -148,6 +187,10 @@ export async function getOrders(): Promise<Order[]> {
 
 export async function getOrder(id: string): Promise<Order | null> {
   try {
+    if (!convex) {
+      console.error("Convex client not initialized")
+      return null
+    }
     if (!id) {
       console.error("Order ID is required")
       return null
@@ -183,6 +226,9 @@ export type CreateOrderInput = {
 
 export async function createOrder(input: CreateOrderInput): Promise<Order> {
   try {
+    if (!convex) {
+      throw new Error("Convex client not initialized")
+    }
     // Check if customer exists, if not create a new one
     let customer = await convex.query(api.queries.getUserByEmail, {
       email: input.customerInfo.email,
@@ -218,6 +264,9 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
 
 export async function updateOrderStatus(id: string, status: string): Promise<Order> {
   try {
+    if (!convex) {
+      throw new Error("Convex client not initialized")
+    }
     if (!id) {
       throw new Error("Order ID is required")
     }
@@ -236,6 +285,9 @@ export async function updateOrderStatus(id: string, status: string): Promise<Ord
 
 export async function importProducts(formData: FormData): Promise<ImportResult> {
   try {
+    if (!convex) {
+      return { success: false, error: "Convex client not initialized" }
+    }
     const file = formData.get("file") as File
     if (!file) {
       return { success: false, error: "No file provided" }
@@ -314,14 +366,26 @@ export async function importProducts(formData: FormData): Promise<ImportResult> 
 
 // Stats
 export async function getDashboardStats() {
+  if (!convex) {
+    console.error("Convex client not initialized")
+    return null
+  }
   const stats = await convex.query(api.queries.getDashboardStats)
   return stats
 }
 
 export async function getRecentOrders(limit = 5) {
+  if (!convex) {
+    console.error("Convex client not initialized")
+    return []
+  }
   return convex.query(api.queries.getRecentOrders, { limit })
 }
 
 export async function getLowStockProducts(threshold = 10): Promise<Product[]> {
+  if (!convex) {
+    console.error("Convex client not initialized")
+    return []
+  }
   return convex.query(api.queries.getLowStockProducts, { threshold }) as Promise<Product[]>
 }
