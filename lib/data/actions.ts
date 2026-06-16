@@ -29,7 +29,11 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getProduct(id: string): Promise<Product | null> {
   try {
-    const product = await convex.query(api.queries.getProduct, { id: id as any })
+    if (!id) {
+      console.error("Product ID is required")
+      return null
+    }
+    const product = await convex.query(api.queries.getProduct, { id } as any)
     return product as Product | null
   } catch (error) {
     console.error(`Failed to fetch product with id ${id}:`, error)
@@ -52,10 +56,13 @@ export async function createProduct(product: CreateProductInput): Promise<Produc
 
 export async function updateProduct(id: string, product: Partial<Product>): Promise<Product> {
   try {
+    if (!id) {
+      throw new Error("Product ID is required")
+    }
     const updatedProduct = await convex.mutation(api.mutations.updateProduct, {
-      id: id as any,
+      id,
       ...product,
-    })
+    } as any)
     revalidatePath(`/products/${id}`)
     revalidatePath("/products")
     return updatedProduct as Product
@@ -67,7 +74,10 @@ export async function updateProduct(id: string, product: Partial<Product>): Prom
 
 export async function deleteProduct(id: string): Promise<Product> {
   try {
-    const deletedProduct = await convex.mutation(api.mutations.deleteProduct, { id: id as any })
+    if (!id) {
+      throw new Error("Product ID is required")
+    }
+    const deletedProduct = await convex.mutation(api.mutations.deleteProduct, { id } as any)
     revalidatePath("/products")
     return deletedProduct as Product
   } catch (error) {
@@ -100,7 +110,11 @@ export async function getUsers(): Promise<User[]> {
 
 export async function getUser(id: string): Promise<User | null> {
   try {
-    const user = await convex.query(api.queries.getUser, { id: id as any })
+    if (!id) {
+      console.error("User ID is required")
+      return null
+    }
+    const user = await convex.query(api.queries.getUser, { id } as any)
     return user as User | null
   } catch (error) {
     console.error(`Failed to fetch user with id ${id}:`, error)
@@ -134,7 +148,11 @@ export async function getOrders(): Promise<Order[]> {
 
 export async function getOrder(id: string): Promise<Order | null> {
   try {
-    const order = await convex.query(api.queries.getOrder, { id: id as any })
+    if (!id) {
+      console.error("Order ID is required")
+      return null
+    }
+    const order = await convex.query(api.queries.getOrder, { id } as any)
     return order as Order | null
   } catch (error) {
     console.error(`Failed to fetch order with id ${id}:`, error)
@@ -200,10 +218,13 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
 
 export async function updateOrderStatus(id: string, status: string): Promise<Order> {
   try {
+    if (!id) {
+      throw new Error("Order ID is required")
+    }
     const updatedOrder = await convex.mutation(api.mutations.updateOrderStatus, {
-      id: id as any,
+      id,
       status,
-    })
+    } as any)
     revalidatePath(`/orders/${id}`)
     revalidatePath("/orders")
     return updatedOrder as Order
