@@ -16,6 +16,12 @@ export default async function AnalyticsPage() {
   const products = await getProducts()
   const categories = await getCategories()
 
+  // Provide default values if Convex is not initialized
+  const totalRevenue = stats?.totalRevenue ?? 0
+  const totalOrders = stats?.totalOrders ?? 0
+  const totalProducts = stats?.totalProducts ?? 0
+  const totalCustomers = stats?.totalCustomers ?? 0
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-4 md:pt-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0">
@@ -27,7 +33,7 @@ export default async function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-xl md:text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
+            <div className="text-xl md:text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">+20.1% from last month</p>
           </CardContent>
         </Card>
@@ -36,7 +42,7 @@ export default async function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Orders</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-xl md:text-2xl font-bold">+{stats.totalOrders}</div>
+            <div className="text-xl md:text-2xl font-bold">+{totalOrders}</div>
             <p className="text-xs text-muted-foreground">+180.1% from last month</p>
           </CardContent>
         </Card>
@@ -45,7 +51,7 @@ export default async function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Products</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-xl md:text-2xl font-bold">{stats.totalProducts}</div>
+            <div className="text-xl md:text-2xl font-bold">{totalProducts}</div>
             <p className="text-xs text-muted-foreground">+19% from last month</p>
           </CardContent>
         </Card>
@@ -54,7 +60,7 @@ export default async function AnalyticsPage() {
             <CardTitle className="text-sm font-medium">Active Customers</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-xl md:text-2xl font-bold">{stats.totalCustomers}</div>
+            <div className="text-xl md:text-2xl font-bold">{totalCustomers}</div>
             <p className="text-xs text-muted-foreground">+201 since last hour</p>
           </CardContent>
         </Card>
