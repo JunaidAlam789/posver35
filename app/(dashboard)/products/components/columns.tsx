@@ -20,6 +20,13 @@ import Link from "next/link"
 import { formatCurrency } from "@/lib/utils"
 import { DeleteProductDialog } from "./delete-product-dialog"
 
+// Helper function to determine stock status
+function getStockStatus(stock: number): "in-stock" | "low-stock" | "out-of-stock" {
+  if (stock <= 0) return "out-of-stock"
+  if (stock <= 20) return "low-stock"
+  return "in-stock"
+}
+
 export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "name",
@@ -34,7 +41,7 @@ export const columns: ColumnDef<Product>[] = [
               className="object-cover"
               width={50}
               height={50}
-              priority
+              loading="lazy"
             />
           </div>
           <div className="flex flex-col">
@@ -68,14 +75,40 @@ export const columns: ColumnDef<Product>[] = [
       const amount = Number.parseFloat(row.getValue("price"))
       return <div className="font-medium">{formatCurrency(amount)}</div>
     },
+    filterFn: (row, id, value) => {
+      if (!value || (!value.min && !value.max)) return true
+      const price = Number.parseFloat(row.getValue(id))
+      if (value.min && price < value.min) return false
+      if (value.max && price > value.max) return false
+      return true
+    },
   },
   {
     accessorKey: "stock",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Stock" />,
     cell: ({ row }) => {
       const stock = Number.parseInt(row.getValue("stock"))
-      return <Badge variant={stock > 20 ? "default" : stock > 10 ? "warning" : "destructive"}>{stock} in stock</Badge>
+      const status = getStockStatus(stock)
+      const badgeVariant = status === "in-stock" ? "default" : status === "low-stock" ? "warning" : "destructive"
+      return <Badge variant={badgeVariant}>{stock} in stock</Badge>
     },
+  },
+  {
+    accessorKey: "stockStatus",
+    header: "Stock Status",
+    cell: ({ row }) => {
+      const stock = Number.parseInt(row.original.stock)
+      const status = getStockStatus(stock)
+      const statusLabel = status === "in-stock" ? "In Stock" : status === "low-stock" ? "Low Stock" : "Out of Stock"
+      return <div className="text-sm">{statusLabel}</div>
+    },
+    filterFn: (row, id, value) => {
+      if (!value || value.length === 0) return true
+      const stock = Number.parseInt(row.original.stock)
+      const status = getStockStatus(stock)
+      return value.includes(status)
+    },
+    enableColumnFilter: true,
   },
   {
     id: "actions",
